@@ -4,12 +4,17 @@
 #include <Wire.h>
 #include <TimeAlarms.h>
 #include <Bounce2.h>
+#include <ezButton.h>
+
 
 //#include <SNTPtime.h>
 
 //pins
 
 //Button management
+// Bounce debouncerGreen = Bounce();
+// Bounce debouncerRed = Bounce();
+
 const int greenButtonPin = 12;
 const int redButtonPin = 11;
 int greenButtonState;                    // the current reading from the input pin
@@ -19,8 +24,10 @@ int lastRedButtonState = HIGH;           // the previous reading from the input 
 unsigned long lastDebounceTimeGreen = 0; // the last time the output pin was toggled
 unsigned long lastDebounceTimeRed = 0;   // the last time the output pin was toggled
 unsigned long debounceDelay = 50;        // the debounce time; increase if the output flickers
+ezButton greenButton(greenButtonPin);
+ezButton redButton(redButtonPin);
 
-//Watering Cycle Timing and Control
+//Watering Cycle Timing and Pump Control
 const int pumpControl = 10;
 unsigned long currentMillis;
 unsigned long endMillis; //some global variables available anywhere in the program
@@ -164,83 +171,127 @@ void setup()
   Serial.begin(9600);
   setSyncProvider(RTC.get); // the function to get the time from the RTC
 
-  //pinModes
-  pinMode(pumpControl, OUTPUT);
-  pinMode(greenButtonPin, INPUT_PULLUP);
-  pinMode(redButtonPin, INPUT_PULLUP);
-  pinMode(blueLed, OUTPUT);
+  // //Debouncer
+  // debouncerGreen.attach(greenButtonPin);
+  // debouncerGreen.interval(1000); // interval in ms
+  // pinMode(greenButtonPin, INPUT_PULLUP);
 
+  // debouncerRed.attach(redButtonPin);
+  // debouncerRed.interval(1000); // interval in ms
+  // pinMode(redButtonPin, INPUT_PULLUP);
+
+  greenButton.setDebounceTime(50);
+  redButton.setDebounceTime(50);
+
+  //LED'S
+  pinMode(blueLed, OUTPUT);
+  pinMode(greenLed, OUTPUT);
+
+  //Water Pump
+  pinMode(pumpControl, OUTPUT);
   digitalWrite(pumpControl, LOW);
   digitalWrite(blueLed, LOW);
   endMillis = 0;
   primingMillis = 0;
   wateringMillis = 0;
-  Serial.println("Powered On");
   lastCycle = poweredOn;
+  Serial.println("Powered On");
 
   //time_t t = now();
-  //Alarm.timerOnce(10, runCycleStart);
+  Alarm.timerOnce(5, runCycleStart);    //call function a number of seconds after startup
 }
 
 void loop()
 {
   // read the state of the switch into a local variable:
-  int greenReading = digitalRead(greenButtonPin);
-  int redReading = digitalRead(redButtonPin);
+  // int greenReading = digitalRead(greenButtonPin);
+  // int redReading = digitalRead(redButtonPin);
   currentMillis = millis();
   Alarm.delay(0);
+  // debouncerGreen.update();
+  // debouncerRed.update();
+
+  greenButton.loop();
+  redButton.loop();
+  int greenButtonState = greenButton.getState();
+  int redButtonState = redButton.getState();
 
   //check green button
   // check to see if you just pressed the button
   // (i.e. the input went from LOW to HIGH), and you've waited long enough
   // since the last press to ignore any noise:
 
-  // If the switch changed, due to noise or pressing:
-  if (greenReading != lastGreenButtonState)
-  {
-    // reset the debouncing timer
-    lastDebounceTimeGreen = millis();
-  }
-  if ((millis() - lastDebounceTimeGreen) > debounceDelay)
-  {
-    // whatever the greenReading is at, it's been there for longer than the debounce
-    // delay, so take it as the actual current state:
-    // if the button state has changed:
-    if (greenReading != greenButtonState)
-    {
-      greenButtonState = greenReading;
-      // only toggle the LED if the new button state is HIGH
-      if (greenButtonState == HIGH)
-      {
-        runCycleStart();
-      }
-    }
-  }
-  // save the greenReading. Next time through the loop, it'll be the lastGreenButtonState:
-  lastGreenButtonState = greenReading;
+  // // If the switch changed, due to noise or pressing:
+  // if (greenReading != lastGreenButtonState)
+  // {
+  //   // reset the debouncing timer
+  //   lastDebounceTimeGreen = millis();
+  // }
+  // if ((millis() - lastDebounceTimeGreen) > debounceDelay)
+  // {
+  //   // whatever the greenReading is at, it's been there for longer than the debounce
+  //   // delay, so take it as the actual current state:
+  //   // if the button state has changed:
+  //   if (greenReading != greenButtonState)
+  //   {
+  //     greenButtonState = greenReading;
+  //     // only toggle the LED if the new button state is HIGH
+  //     if (greenButtonState == HIGH)
+  //     {
+  //       runCycleStart();
+  //     }
+  //   }
+  // }
+  // // save the greenReading. Next time through the loop, it'll be the lastGreenButtonState:
+  // lastGreenButtonState = greenReading;
 
-  //check red button
-  if (redReading != lastRedButtonState)
-  {
-    // reset the debouncing timer
-    lastDebounceTimeRed = millis();
-  }
-  if ((millis() - lastDebounceTimeRed) > debounceDelay)
-  {
-    // whatever the rednReading is at, it's been there for longer than the debounce
-    // delay, so take it as the actual current state:
-    // if the button state has changed:
-    if (redReading != redButtonState)
-    {
-      redButtonState = redReading;
-      if (redButtonState == HIGH && lastCycle != endCycle)
-      {
-        endWateringCycle();
-      }
-    }
-  }
-  // save the redReading. Next time through the loop, it'll be the lastRedButtonState:
-  lastRedButtonState = redReading;
+  // //Check green button
+  // int greenValue = debouncerGreen.read();
+  // if (greenValue == HIGH)
+  // {
+  //   runCycleStart();
+  // }
+
+  // //Check red button
+  // int redValue = debouncerRed.read();
+  // if (redValue == HIGH)
+  // {
+  //   endWateringCycle();
+  // }
+
+if (greenButton.isPressed())
+{
+  runCycleStart();
+}
+
+if (redButton.isPressed() && lastCycle != endCycle)
+{
+  endWateringCycle();
+}
+
+
+  // //check red button
+  // if (redReading != lastRedButtonState)
+  // {
+  //   // reset the debouncing timer
+  //   lastDebounceTimeRed = millis();
+  // }
+  // if ((millis() - lastDebounceTimeRed) > debounceDelay)
+  // {
+  //   // whatever the rednReading is at, it's been there for longer than the debounce
+  //   // delay, so take it as the actual current state:
+  //   // if the button state has changed:
+  //   if (redReading != redButtonState)
+  //   {
+  //     redButtonState = redReading;
+  //     if (redButtonState == HIGH && lastCycle != endCycle)
+  //     {
+  //       endWateringCycle();
+  //     }
+  //   }
+  // }
+  // // save the redReading. Next time through the loop, it'll be the lastRedButtonState:
+  // lastRedButtonState = redReading;
 
   if (lastCycle == cycleStart){
     runPrimeLine();

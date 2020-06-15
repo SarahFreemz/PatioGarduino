@@ -5,6 +5,8 @@
 #include <TimeAlarms.h>
 #include <ezButton.h>
 
+#include "config.h"
+
 //#include <SNTPtime.h>
 
 const int greenButtonPin = 12;

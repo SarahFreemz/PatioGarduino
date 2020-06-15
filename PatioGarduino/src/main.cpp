@@ -8,12 +8,10 @@
 //#include <SNTPtime.h>
 
 //pins
-const int pumpControl = 10;
-const int greenButtonPin = 12;
-const int redButtonPin = 11;
-const int blueLed = 4;
 
 //Button management
+const int greenButtonPin = 12;
+const int redButtonPin = 11;
 int greenButtonState;                    // the current reading from the input pin
 int lastGreenButtonState = HIGH;         // the previous reading from the input pin
 int redButtonState;                      // the current reading from the input pin
@@ -22,7 +20,8 @@ unsigned long lastDebounceTimeGreen = 0; // the last time the output pin was tog
 unsigned long lastDebounceTimeRed = 0;   // the last time the output pin was toggled
 unsigned long debounceDelay = 50;        // the debounce time; increase if the output flickers
 
-//Watering Cycle Timing
+//Watering Cycle Timing and Control
+const int pumpControl = 10;
 unsigned long currentMillis;
 unsigned long endMillis; //some global variables available anywhere in the program
 unsigned long primingMillis;
@@ -36,40 +35,47 @@ const int primingCycle = 3;
 const int wateringCycle = 4;
 const int endCycle = 5;
 
+//LED's
+const int blueLed = 4;
+const int greenLed = 5;
+int allLed[] = {blueLed,greenLed};
+int ledCount = 2;
+
+
 //blink
-const unsigned long blinkDelay = 500;
-unsigned long blinkMillis = 0;
-unsigned long newBlinkMillis = 0;
-int blueLedState;
+// const unsigned long blinkDelay = 500;
+// unsigned long blinkMillis = 0;
+// unsigned long newBlinkMillis = 0;
+// int blueLedState;
 
 //Functions
 
-void blinkBlueLed()
-{
-  // check to see if it's time to blink the LED; that is, if the difference
-  // between the current time and last time you blinked the LED is bigger than
-  // the interval at which you want to blink the LED.
-  unsigned long newBlinkMillis = millis();
+// void blinkBlueLed()
+// {
+//   // check to see if it's time to blink the LED; that is, if the difference
+//   // between the current time and last time you blinked the LED is bigger than
+//   // the interval at which you want to blink the LED.
+//   unsigned long newBlinkMillis = millis();
 
-  if (newBlinkMillis - blinkMillis >= blinkDelay)
-  {
-    // save the last time you blinked the LED
-    newBlinkMillis = millis();
+//   if (newBlinkMillis - blinkMillis >= blinkDelay)
+//   {
+//     // save the last time you blinked the LED
+//     newBlinkMillis = millis();
 
-    // if the LED is off turn it on and vice-versa:
-    if (blueLedState == LOW)
-    {
-      blueLedState = HIGH;
-    }
-    else
-    {
-      blueLedState = LOW;
-    }
+//     // if the LED is off turn it on and vice-versa:
+//     if (blueLedState == LOW)
+//     {
+//       blueLedState = HIGH;
+//     }
+//     else
+//     {
+//       blueLedState = LOW;
+//     }
 
-    // set the LED with the ledState of the variable:
-    digitalWrite(blueLed, blueLedState);
-  }
-}
+//     // set the LED with the ledState of the variable:
+//     digitalWrite(blueLed, blueLedState);
+//   }
+// }
 
 void printDigits(int digits)
 {
@@ -99,10 +105,10 @@ void runPrimeLine()
 {
   //if (currentMillis - primingMillis <= primeLinePeriod){
   primingMillis = currentMillis;
-  blinkBlueLed();
   Serial.print("Priming: ");
   digitalClockDisplay();
   analogWrite(pumpControl, 127);
+  digitalWrite(greenLed,HIGH);
   wateringMillis = currentMillis + primeLinePeriod;
   lastCycle = primingCycle;
 
@@ -127,9 +133,10 @@ void runWateringCycle()
   Serial.print("Watering: ");
   digitalClockDisplay();
   analogWrite(pumpControl, 191);
+  digitalWrite(greenLed,LOW);
+  digitalWrite(blueLed,HIGH);
   endMillis = currentMillis + wateringCyclePeriod;
   lastCycle = wateringCycle;
-  digitalWrite(blueLed, HIGH);
 }
 
 void endWateringCycle()
@@ -139,9 +146,9 @@ void endWateringCycle()
     Serial.print("Watering Complete: ");
     digitalClockDisplay();
     analogWrite(pumpControl, 0);
-    digitalWrite(blueLed, LOW);
+    for(int count=0; count<ledCount; count++)   // Assign the array pins their array position
+      digitalWrite(allLed[count], LOW);         // set "LEDs" to LOW  
     lastCycle = endCycle;
-    digitalWrite(blueLed, LOW);
   }
 }
 
@@ -235,11 +242,10 @@ void loop()
   // save the redReading. Next time through the loop, it'll be the lastRedButtonState:
   lastRedButtonState = redReading;
 
-  if (lastCycle == cycleStart)
+  if (lastCycle == cycleStart){
     runPrimeLine();
-    newBlinkMillis = currentMillis;
+  }
 
-  
   if (lastCycle == primingCycle && currentMillis - wateringMillis <= wateringCyclePeriod && currentMillis > wateringMillis)
   {
     runWateringCycle();

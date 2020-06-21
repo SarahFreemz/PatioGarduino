@@ -77,6 +77,79 @@ int ledCount = 2;
 //   }
 // }
 
+void printDigits(int digits);
+void digitalClockDisplay();
+
+void runCycleStart();
+void runPrimeLine();
+void runWateringCycle();
+void endWateringCycle();
+
+
+
+
+// the setup routine runs once when you press reset:
+void setup()
+{
+  // initialize serial communication at 9600 bits per second:
+  Serial.begin(9600);
+  setSyncProvider(RTC.get); // the function to get the time from the RTC
+
+  greenButton.setDebounceTime(50);
+  redButton.setDebounceTime(50);
+
+  //LED'S
+  pinMode(blueLed, OUTPUT);
+  pinMode(greenLed, OUTPUT);
+
+  //Water Pump
+  pinMode(pumpControl, OUTPUT);
+  digitalWrite(pumpControl, LOW);
+  digitalWrite(blueLed, LOW);
+  endMillis = 0;
+  primingMillis = 0;
+  wateringMillis = 0;
+  lastCycle = poweredOn;
+  Serial.println("Powered On");
+
+  //time_t t = now();
+  Alarm.timerOnce(5, runCycleStart); //call function a number of seconds after startup
+}
+
+void loop()
+{
+  currentMillis = millis();
+  Alarm.delay(0);
+
+  greenButton.loop();
+  redButton.loop();
+
+  if (greenButton.isPressed())
+  {
+    runCycleStart();
+  }
+
+  if (redButton.isPressed() && lastCycle != endCycle)
+  {
+    endWateringCycle();
+  }
+
+  if (lastCycle == cycleStart)
+  {
+    runPrimeLine();
+  }
+
+  if (lastCycle == primingCycle && currentMillis - wateringMillis <= wateringCyclePeriod && currentMillis > wateringMillis)
+  {
+    runWateringCycle();
+  }
+
+  if (lastCycle == wateringCycle && currentMillis >= endMillis)
+  {
+    endWateringCycle();
+  }
+}
+
 void printDigits(int digits)
 {
   // utility function for digital clock display: prints preceding colon and leading 0
@@ -155,66 +228,4 @@ void endWateringCycle()
 void runCycleStart()
 {
   runPrimeLine();
-}
-
-// the setup routine runs once when you press reset:
-void setup()
-{
-  // initialize serial communication at 9600 bits per second:
-  Serial.begin(9600);
-  setSyncProvider(RTC.get); // the function to get the time from the RTC
-
-  greenButton.setDebounceTime(50);
-  redButton.setDebounceTime(50);
-
-  //LED'S
-  pinMode(blueLed, OUTPUT);
-  pinMode(greenLed, OUTPUT);
-
-  //Water Pump
-  pinMode(pumpControl, OUTPUT);
-  digitalWrite(pumpControl, LOW);
-  digitalWrite(blueLed, LOW);
-  endMillis = 0;
-  primingMillis = 0;
-  wateringMillis = 0;
-  lastCycle = poweredOn;
-  Serial.println("Powered On");
-
-  //time_t t = now();
-  Alarm.timerOnce(5, runCycleStart); //call function a number of seconds after startup
-}
-
-void loop()
-{
-  currentMillis = millis();
-  Alarm.delay(0);
-
-  greenButton.loop();
-  redButton.loop();
-
-  if (greenButton.isPressed())
-  {
-    runCycleStart();
-  }
-
-  if (redButton.isPressed() && lastCycle != endCycle)
-  {
-    endWateringCycle();
-  }
-
-  if (lastCycle == cycleStart)
-  {
-    runPrimeLine();
-  }
-
-  if (lastCycle == primingCycle && currentMillis - wateringMillis <= wateringCyclePeriod && currentMillis > wateringMillis)
-  {
-    runWateringCycle();
-  }
-
-  if (lastCycle == wateringCycle && currentMillis >= endMillis)
-  {
-    endWateringCycle();
-  }
 }

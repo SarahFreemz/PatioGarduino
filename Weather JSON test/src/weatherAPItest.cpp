@@ -1,0 +1,78 @@
+#include <Arduino.h>
+#include <ArduinoJSON.h>
+#include <WiFi.h> 
+
+#include "config.h"
+
+WiFiClient client;
+
+int status = WL_IDLE_STATUS;
+
+// Open Weather Map API server name
+const char server[] = "api.openweathermap.org";
+
+// Replace the next line to match your city and 2 letter country code
+// String nameOfCity = "REPLACE_WITH_YOUR_CITY,REPLACE_WITH_YOUR_COUNTRY_CODE"; 
+String lat = "34.840500";
+String lon = "-82.289544";
+// How your nameOfCity variable would look like for Lagos on Nigeria
+//String nameOfCity = "Lagos,NG"; 
+
+//type of OPM call
+
+const String oneCallForecast = "/data/2.5/onecall?" ;        //https://api.openweathermap.org/data/2.5/onecall?lat=33.441792&lon=-94.037689&exclude=hourly,daily&appid={YOUR API KEY}
+const String oneCallHistorical = "/data/2.5/onecall/timemachine?";       //https://api.openweathermap.org/data/2.5/onecall/timemachine?lat={lat}&lon={lon}&dt={time}&appid={YOUR API KEY}
+const String excludeParts = "current,minutely,daily";
+
+// Replace the next line with your API Key
+String apiKey = "41f83c3b06019ddee065ef84601d6705";
+
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(9600);
+  WiFi.begin(ssid, password);
+ 
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(1000);
+    Serial.println("Connecting to WiFi..");
+  }
+ 
+  Serial.println("Connected to the WiFi network");
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+// }
+
+// void getWeather(){
+  if (client.connect(server,80)){
+  unsigned long currentdt = 1592246978;
+
+  //forecast
+  client.println( "Get" + oneCallForecast + "?lat=" + lat + "&lon=" + lon + "&exclude=" + excludeParts + "&appid=" + apiKey);
+  //historical
+  client.println( "Get" + oneCallHistorical + "?lat=" + lat + "&lon=" + lon + "&dt=" + currentdt + "&appid=" + apiKey);
+
+  unsigned long timeout = millis();
+    while (client.available() == 0) {
+      if (millis() - timeout > 5000) {
+        Serial.println(">>> Client Timeout !");
+        client.stop();
+        return;
+      }
+    }
+}
+if (client.available()) {
+    char c = client.read();
+    Serial.print(c);
+  }
+
+  if (!client.connected()) {
+    Serial.println();
+    Serial.println("disconnecting.");
+    client.stop();
+    for(;;)
+      ;
+  }
+}
+ //   client.println("GET /data/2.5/forecast?q=" + nameOfCity + "&APPID=" + apiKey + "&mode=json&units=metric&cnt=2 HTTP/1.1");

@@ -1,19 +1,8 @@
 {
 	"folders": [
 		{
-			"name": "test3",
-			"path": "..\\..\\PlatformIO\\Projects\\test3"
-		},
-		{
+			"name": "PatioGarduino",
 			"path": "PatioGarduino"
 		}
-	],
-	"settings": {
-		"files.associations": {
-			"*.tcc": "cpp",
-			"string": "cpp",
-			"unordered_map": "cpp",
-			"random": "cpp"
-		}
-	}
+	]
 }

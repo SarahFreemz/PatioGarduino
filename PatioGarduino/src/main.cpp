@@ -38,7 +38,7 @@ const int endCycle = 5;
 
 //LED's
 const int blueLed = 4;
-const int greenLed = 13; //5
+const int greenLed = 5;
 int allLed[] = {blueLed, greenLed};
 int ledCount = 2;
 
@@ -161,7 +161,7 @@ void runCycleStart()
 void setup()
 {
   // initialize serial communication at 9600 bits per second:
-  Serial.begin(115200);
+  Serial.begin(9600);
   setSyncProvider(RTC.get); // the function to get the time from the RTC
 
   greenButton.setDebounceTime(50);

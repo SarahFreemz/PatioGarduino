@@ -7,16 +7,30 @@ Next steps: Build a web-based dashboard to show watering metrics, monitor batter
 
 ## Project Photos
 
-![Initial testing](images/USER_SCOPED_TEMP_DATA_MSGR_PHOTO_FOR_UPLOAD_1591991998194_6677298405994052760.jpeg)
+<a href="images/USER_SCOPED_TEMP_DATA_MSGR_PHOTO_FOR_UPLOAD_1591991998194_6677298405994052760.jpeg">
+  <img src="images/USER_SCOPED_TEMP_DATA_MSGR_PHOTO_FOR_UPLOAD_1591991998194_6677298405994052760.jpeg" alt="Initial testing" width="150" style="margin: 5px;">
+</a>
 
-![Adjustable solar panel bracket/mount](images/USER_SCOPED_TEMP_DATA_MSGR_PHOTO_FOR_UPLOAD_1593490455168_6683583390074497181.jpeg)
+<a href="images/USER_SCOPED_TEMP_DATA_MSGR_PHOTO_FOR_UPLOAD_1593490455168_6683583390074497181.jpeg">
+  <img src="images/USER_SCOPED_TEMP_DATA_MSGR_PHOTO_FOR_UPLOAD_1593490455168_6683583390074497181.jpeg" alt="Adjustable solar panel bracket/mount" width="150" style="margin: 5px;">
+</a>
 
-![Irrigation lines 1](images/IMG_20200403_121623119.jpg)
+<a href="images/IMG_20200403_121623119.jpg">
+  <img src="images/IMG_20200403_121623119.jpg" alt="Irrigation lines 1" width="150" style="margin: 5px;">
+</a>
 
-![Irrigation lines 2](images/IMG_20200403_121627293.jpg)
+<a href="images/IMG_20200403_121627293.jpg">
+  <img src="images/IMG_20200403_121627293.jpg" alt="Irrigation lines 2" width="150" style="margin: 5px;">
+</a>
 
-![Irrigation lines 3](images/IMG_20200403_151122_01.jpg)
+<a href="images/IMG_20200403_151122_01.jpg">
+  <img src="images/IMG_20200403_151122_01.jpg" alt="Irrigation lines 3" width="150" style="margin: 5px;">
+</a>
 
-![Patio setup 1](images/USER_SCOPED_TEMP_DATA_MSGR_PHOTO_FOR_UPLOAD_1586541424154.jpeg)
+<a href="images/USER_SCOPED_TEMP_DATA_MSGR_PHOTO_FOR_UPLOAD_1586541424154.jpeg">
+  <img src="images/USER_SCOPED_TEMP_DATA_MSGR_PHOTO_FOR_UPLOAD_1586541424154.jpeg" alt="Patio setup 1" width="150" style="margin: 5px;">
+</a>
 
-![Patio setup 2](images/IMG_20200329_185708862.jpg)
+<a href="images/IMG_20200329_185708862.jpg">
+  <img src="images/IMG_20200329_185708862.jpg" alt="Patio setup 2" width="150" style="margin: 5px;">
+</a>
